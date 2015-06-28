@@ -17,14 +17,14 @@ main(int argc, char *argv[])
 {
   float *A, *B, *C;
   int n, i, j,k;
-  int ii, jj, kk, tamBloque;
+  int ii, jj, kk;
   int posicion, posII, posJJ;  
   double timetick;
 
   /* Chequeando parametros */
-  if (argc != 3 || (n = atoi(argv[1])) <= 0 || (tamBloque = atoi(argv[2])) <= 0 )
+  if (argc != 2 || (n = atoi(argv[1])) <= 0)
   {
-    printf("Uso: %s n tamBloque\n  donde n: dimension de la matriz cuadrada (nxn X nxn)\ntamBloque: dimension por bloque\n", argv[0]);
+    printf("Uso: %s n\n  donde n: dimension de la matriz cuadrada (nxn X nxn)\n", argv[0]);
     exit(1);
   }
 
@@ -43,28 +43,16 @@ main(int argc, char *argv[])
   /*************************************************************/
   /* Programar aqui el algoritmo de multiplicacion de matrices */
   /*************************************************************/
-  # pragma omp parallel for private(i,j,k, ii,jj, posicion, posII, posJJ), shared (A,B,C)
-  for (ii = 0; ii < n; ii += tamBloque){
-
-    posII = ii + tamBloque;
-    if(posII >= n) posII = n;
-    
-    for (jj = 0; jj < n; jj += tamBloque){
-
-      posJJ = jj + tamBloque;
-      if(posJJ >= n) posJJ = n;
-
-      for (k = 0; k < n; k++) {
-        posicion=k*n;
-        
-        for (i = ii; i < posII; i++) { 
-          float *celdaC = &C[posicion + i];
-          for (j = jj; j < posJJ; j++) 
-            *celdaC += A[ posicion + j ] * B[j*n + i];
-        }
+  # pragma omp parallel for private(i,j,k), shared (A,B,C)
+  for(i=0; i<n ; i++){
+    int posI = i*n;
+    for(j=0; j<n ; j++){
+      float *celdaI = &C[posI+j];
+      for(k=0; k<n ; k++){
+        *celdaI += A[posI+k]*B[k*n+j];
       }
     }
-  }    
+  } 
   /*************************************************************/
   
   timetick = dwalltime() - timetick;
