@@ -18,9 +18,9 @@ main(int argc, char *argv[])
   float *A, *B, *C;
   int n, i, j,k;
   int ii, jj, kk;
-  int posicion, posII, posJJ;  
+  int posI;  
   double timetick;
-
+  float *celdaI;
   /* Chequeando parametros */
   if (argc != 2 || (n = atoi(argv[1])) <= 0)
   {
@@ -43,11 +43,11 @@ main(int argc, char *argv[])
   /*************************************************************/
   /* Programar aqui el algoritmo de multiplicacion de matrices */
   /*************************************************************/
-  # pragma omp parallel for private(i,j,k), shared (A,B,C)
+  # pragma omp parallel for private(i,j,k, posI, celdaI), shared (A,B,C)
   for(i=0; i<n ; i++){
-    int posI = i*n;
+    posI = i*n;
     for(j=0; j<n ; j++){
-      float *celdaI = &C[posI+j];
+      celdaI = &C[posI+j];
       for(k=0; k<n ; k++){
         *celdaI += A[posI+k]*B[k*n+j];
       }
