@@ -1,0 +1,5 @@
+mpicc -o $1 $1.c -O3
+
+scp $1 emer@10.0.2.4:Escritorio/SOA/TP/06-versionOptimizadaOpenMPI/.
+
+mpirun -allow-run-as-root -machinefile mpi_hosts $1 $2
